@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aks-spring-boot-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aks-spring-boot-app
+  template:
+    metadata:
+      labels:
+        app: aks-spring-boot-app
+    spec:
+      containers:
+        - name: aks-spring-boot-app
+          image: springbootdemo20220919.azurecr.io/tnguyenccia/aks-spring-boot:#{Build.BuildId}#
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8085
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: aks-spring-boot-app
+    k8s-app: aks-spring-boot-app
+  name: aks-spring-boot-app
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8085
+  type: LoadBalancer
+  selector:
+    app: aks-spring-boot-app
